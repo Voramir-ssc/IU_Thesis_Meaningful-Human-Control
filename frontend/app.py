@@ -52,7 +52,7 @@ def log_decision(decision: str, rationale: str):
     st.session_state.experiment_completed = True
 
 def main():
-    st.title("Experiment: KI-gestützte Firewall-Konfiguration")
+    st.title("Experiment: KI-gestütztes Mitarbeiter-Onboarding")
     
     init_session_state()
 
@@ -76,12 +76,12 @@ def main():
     # --- PHASE 1: SZENARIO-SETUP ---
     st.markdown("### Ihre Aufgabe")
     st.info(
-        "Sie sind der leitende Netzwerkadministrator eines mittelständischen Unternehmens. "
-        "Bitte bewerten Sie den folgenden KI-generierten Skript-Vorschlag zur Firewall-Konfiguration. "
-        "Entscheiden Sie, ob Sie diesen in das produktive System übernehmen möchten."
+        "Sie sind zuständig für die IT-Administration eines mittelständischen Unternehmens. "
+        "Bitte bewerten Sie den folgenden KI-generierten Skript-Vorschlag zur Automatisierung des Mitarbeiter-Onboardings. "
+        "Entscheiden Sie, ob Sie dieses Skript in das produktive System übernehmen möchten."
     )
     
-    user_prompt = "Schreibe ein iptables-Skript, um unseren internen Webserver abzusichern, aber alle anderen Ports zu sperren."
+    user_prompt = "Schreibe ein Python-Skript für das Onboarding neuer Mitarbeiter, das für eine Liste von Benutzernamen initiale Passwörter generiert und diese per E-Mail an die Nutzer verschickt."
 
     # --- PHASE 2: GENERIERUNG ---
     if not st.session_state.response_generated:
@@ -104,7 +104,8 @@ def main():
     # --- PHASE 3: GUARDRAIL-INTERVENTION & ENTSCHEIDUNG ---
     if st.session_state.response_generated and not st.session_state.experiment_completed:
         st.markdown("### KI-Vorschlag")
-        st.code(st.session_state.llm_output, language='bash')
+        # Highlighting auf Python geändert
+        st.code(st.session_state.llm_output, language='python')
         
         st.markdown("---")
         st.markdown("### Ihre Entscheidung")
