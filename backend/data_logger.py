@@ -1,5 +1,5 @@
 import os
-import pandas as pd
+import csv
 from datetime import datetime
 
 # Definierter Speicherort für die Experiment-Logs
@@ -14,31 +14,36 @@ def log_experiment_data(
     time_taken_seconds: float
 ) -> None:
     """
-    Speichert die Ergebnisse eines Durchlaufs sauber in einer CSV-Datei für die ANOVA-Auswertung.
-    
-    Args:
-        proband_id (str): Die eindeutige Kennung des Probanden.
-        guardrail_active (bool): Unabhängige Variable 1 - War das Guardrail aktiv?
-        force_error (bool): Unabhängige Variable 2 - Hat die KI absichtlich falsch geantwortet?
-        decision (str): Abhängige Variable - Die finale Entscheidung (AKZEPTIERT/ABGELEHNT).
-        rationale (str): Die fachliche Begründung (Qualitative Auswertung).
-        time_taken_seconds (float): Reaktionszeit in Sekunden (für Kovarianzanalysen).
+    Speichert die Ergebnisse eines Durchlaufs effizient in einer CSV-Datei.
     """
-    # Neuen Datensatz erstellen
-    new_data = {
-        'Timestamp': [datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
-        'Proband_ID': [proband_id],
-        'Guardrail_Active': [guardrail_active],
-        'Force_Error': [force_error],
-        'Decision': [decision],
-        'Time_Taken_Seconds': [round(time_taken_seconds, 2)],
-        'Rationale': [rationale.strip() if rationale else ""]
-    }
+    # Sicherstellen, dass das Verzeichnis existiert
+    os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
     
-    df_new = pd.DataFrame(new_data)
+    file_exists = os.path.isfile(LOG_FILE_PATH)
     
-    # CSV anhängen oder neu erstellen, falls sie nicht existiert
-    if not os.path.isfile(LOG_FILE_PATH):
-        df_new.to_csv(LOG_FILE_PATH, index=False, sep=';', encoding='utf-8')
-    else:
-        df_new.to_csv(LOG_FILE_PATH, mode='a', header=False, index=False, sep=';', encoding='utf-8')
+    # Öffnen der Datei im Append-Modus
+    with open(LOG_FILE_PATH, mode='a', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, delimiter=';')
+        
+        # Header schreiben, falls die Datei neu erstellt wird
+        if not file_exists:
+            writer.writerow([
+                'Timestamp', 
+                'Proband_ID', 
+                'Guardrail_Active', 
+                'Force_Error', 
+                'Decision', 
+                'Time_Taken_Seconds', 
+                'Rationale'
+            ])
+            
+        # Datensatz schreiben
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            proband_id,
+            guardrail_active,
+            force_error,
+            decision,
+            round(time_taken_seconds, 2),
+            rationale.strip() if rationale else ""
+        ])

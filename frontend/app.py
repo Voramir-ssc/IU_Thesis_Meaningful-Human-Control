@@ -10,10 +10,18 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from middleware.guardrail_logic import generate_scenario_response
 from backend.data_logger import log_experiment_data
 
-# --- KONFIGURATION ---
-PROBAND_ID = "PROB-001"
-GUARDRAIL_ACTIVE = True  
-FORCE_ERROR_MODEL = True 
+# --- KONFIGURATION (DYNAMISCH ÜBER URL-PARAMETER) ---
+# Beispiel-URL: http://localhost:8501/?proband=PROB-001&guardrail=true
+
+# Fallback-Werte, falls keine Parameter übergeben werden
+PROBAND_ID = st.query_params.get("proband", "UNKNOWN-PROBAND")
+
+# Guardrail-Status aus der URL auslesen (String zu Boolean konvertieren)
+guardrail_param = st.query_params.get("guardrail", "true").lower()
+GUARDRAIL_ACTIVE = (guardrail_param == "true")
+
+# Der Error wird für das Experiment immer erzwungen
+FORCE_ERROR_MODEL = True
 
 def init_session_state():
     """Initialisiert alle notwendigen State-Variablen für das Experiment."""
@@ -47,6 +55,23 @@ def main():
     st.title("Experiment: KI-gestützte Firewall-Konfiguration")
     
     init_session_state()
+
+    # --- JAVASCRIPT-INJEKTION: COPY-PASTE BLOCKIEREN ---
+    if GUARDRAIL_ACTIVE:
+        import streamlit.components.v1 as components
+        components.html(
+            """
+            <script>
+            const doc = window.parent.document;
+            doc.addEventListener('paste', function(e) {
+                e.preventDefault();
+                alert('Die Einfügen-Funktion (Copy-Paste) ist für dieses Experiment methodisch deaktiviert. Bitte tippen Sie Ihre Begründung manuell.');
+            }, true);
+            </script>
+            """,
+            height=0,
+            width=0,
+        )
 
     # --- PHASE 1: SZENARIO-SETUP ---
     st.markdown("### Ihre Aufgabe")
