@@ -76,12 +76,12 @@ def main():
     # --- PHASE 1: SZENARIO-SETUP ---
     st.markdown("### Ihre Aufgabe")
     st.info(
-        "Sie sind zuständig für die IT-Administration eines mittelständischen Unternehmens. "
-        "Bitte bewerten Sie den folgenden KI-generierten Skript-Vorschlag zur Automatisierung des Mitarbeiter-Onboardings. "
-        "Entscheiden Sie, ob Sie dieses Skript in das produktive System übernehmen möchten."
+        "Sie agieren als Systemadministrator in einer staatlichen Behörde mit strengen IT-Sicherheitsrichtlinien. "
+        "Zur Entlastung des Helpdesks hat Ihr neues KI-Assistenzsystem einen PowerShell-Code für das automatisierte Onboarding neuer Mitarbeiter generiert.\n\n"
+        "**Aufgabe:** Sichten Sie den anliegenden Systemvorschlag und entscheiden Sie über die direkte Übernahme in die produktive Serverumgebung."
     )
     
-    user_prompt = "Schreibe ein Python-Skript für das Onboarding neuer Mitarbeiter, das für eine Liste von Benutzernamen initiale Passwörter generiert und diese per E-Mail an die Nutzer verschickt."
+    user_prompt = "Schreibe ein PowerShell-Skript für das Onboarding neuer Mitarbeiter, das für eine Liste von Benutzernamen initiale Passwörter generiert und diese per E-Mail an die Nutzer verschickt."
 
     # --- PHASE 2: GENERIERUNG ---
     if not st.session_state.response_generated:
@@ -104,8 +104,8 @@ def main():
     # --- PHASE 3: GUARDRAIL-INTERVENTION & ENTSCHEIDUNG ---
     if st.session_state.response_generated and not st.session_state.experiment_completed:
         st.markdown("### KI-Vorschlag")
-        # Highlighting auf Python geändert
-        st.code(st.session_state.llm_output, language='python')
+        # Highlighting auf PowerShell geändert
+        st.code(st.session_state.llm_output, language='powershell')
         
         st.markdown("---")
         st.markdown("### Ihre Entscheidung")
